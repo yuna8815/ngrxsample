@@ -9,13 +9,16 @@
 <ion-content [fullscreen]="true">
   <ion-item>
     <ion-label>Price</ion-label>
-    <ion-input placeholder="0"></ion-input>
+    <input #price (input)="priceA$.next(price.value)" placeholder="0" />
   </ion-item>
   <ion-item>
     <ion-label>Amount</ion-label>
-    <ion-input placeholder="0"></ion-input>
+    <input #amount (input)="amountA$.next(amount.value)" placeholder="0" />
   </ion-item>
   <ion-item>
-    <ion-label>total</ion-label>
+    <ion-label>Total</ion-label>
+    <ion-label slot="end">{{ totalOrderAmountV$ | async }}</ion-label>
   </ion-item>
+
+  orderData price: {{ orderData.price }}, amount: {{ orderData.amount }}
 </ion-content>
