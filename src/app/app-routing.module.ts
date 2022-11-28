@@ -10,7 +10,11 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
+  },  {
+    path: 'counter',
+    loadChildren: () => import('./counter/counter.module').then( m => m.CounterPageModule)
   },
+
 ];
 
 @NgModule({
