@@ -7,7 +7,8 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { StoreModule } from '@ngrx/store';
-import { counterReducer } from './reducer/counter.reducer';
+import { counterReducer } from './common/reducer/counter.reducer';
+import { CounterPageModule } from './counter/counter.module';
 
 @NgModule({
   declarations: [AppComponent],
@@ -15,7 +16,13 @@ import { counterReducer } from './reducer/counter.reducer';
     BrowserModule,
     IonicModule.forRoot(),
     AppRoutingModule,
-    StoreModule.forRoot({ count: counterReducer})
+    // Reducer 4. root에 state 등록
+    // StoreModule.forRoot({ count: counterReducer})
+    
+    // Register feature state 1.
+    StoreModule.forRoot({}),
+    // Register feature state 4.
+    CounterPageModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
