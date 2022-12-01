@@ -10,6 +10,7 @@ import { StoreModule } from '@ngrx/store';
 // import { counterReducer } from './common/reducer/counter.reducer';
 // import { CounterPageModule } from './counter/counter.module';
 import { reducers } from './common/reducer';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 @NgModule({
   declarations: [AppComponent],
@@ -24,6 +25,9 @@ import { reducers } from './common/reducer';
     StoreModule.forRoot(reducers),
     // Register feature state 4.
     // CounterPageModule
+    StoreDevtoolsModule.instrument({
+      maxAge: 25
+    })
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],
