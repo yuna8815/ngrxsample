@@ -9,7 +9,7 @@ export interface State {
 
 // Reducer 2. state 초기 값 설정
 // export const initialState = 0;
-export const initialState: State = {
+const initialState: State = {
   counter: 0
 }
 
@@ -21,7 +21,7 @@ export const initialState: State = {
 // );
 
 // Reducer 3. reducer function
-export const counterReducer = createReducer(
+const counterReducer = createReducer(
   initialState,
   on(counterActions.increment, state => ({
     ...state,
@@ -36,7 +36,11 @@ export const counterReducer = createReducer(
 );
 
 // Register feature state 2.
-export const counterFeatureKey = 'counter';
+// export const counterFeatureKey = 'counter';
+
+export function reducer(state: State | undefined, action: any): State {
+  return counterReducer(state, action);
+}
 
 // createFeatureSelector(featureName: any)
 export const counter = createFeatureSelector<State>('counter');

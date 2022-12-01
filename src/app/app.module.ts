@@ -7,8 +7,9 @@ import { IonicModule, IonicRouteStrategy } from '@ionic/angular';
 import { AppComponent } from './app.component';
 import { AppRoutingModule } from './app-routing.module';
 import { StoreModule } from '@ngrx/store';
-import { counterReducer } from './common/reducer/counter.reducer';
-import { CounterPageModule } from './counter/counter.module';
+// import { counterReducer } from './common/reducer/counter.reducer';
+// import { CounterPageModule } from './counter/counter.module';
+import { reducers } from './common/reducer';
 
 @NgModule({
   declarations: [AppComponent],
@@ -20,9 +21,9 @@ import { CounterPageModule } from './counter/counter.module';
     // StoreModule.forRoot({ count: counterReducer})
     
     // Register feature state 1.
-    StoreModule.forRoot({}),
+    StoreModule.forRoot(reducers),
     // Register feature state 4.
-    CounterPageModule
+    // CounterPageModule
   ],
   providers: [{ provide: RouteReuseStrategy, useClass: IonicRouteStrategy }],
   bootstrap: [AppComponent],

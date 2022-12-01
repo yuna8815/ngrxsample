@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { createSelector, Store } from '@ngrx/store';
 // import { Observable } from 'rxjs';
 import { decrement, increment, reset } from '../common/actions/counter.actions';
+import { State } from '../common/reducer';
 import * as counterReducer from '../common/reducer/counter.reducer';
 
 const counterSelector = {
@@ -20,7 +21,7 @@ export class CounterPage implements OnInit {
   count$ = this.store.select(counterSelector.counter);
 
   constructor(
-    private store: Store<{ count: number}>
+    private store: Store<State>
   ) {
     // Connect 'this.count$' stream to the current store 'count' state
     // this.count$ = store.select('count');
