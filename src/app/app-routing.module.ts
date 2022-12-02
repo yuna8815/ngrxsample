@@ -10,13 +10,18 @@ const routes: Routes = [
     path: '',
     redirectTo: 'home',
     pathMatch: 'full'
-  },  {
+  },
+  {
     path: 'counter',
     loadChildren: () => import('./counter/counter.module').then( m => m.CounterPageModule)
   },
   {
     path: 'view',
     loadChildren: () => import('./view/view.module').then( m => m.ViewPageModule)
+  },
+  {
+    path: 'autocomplete',
+    loadChildren: () => import('./autocomplete/autocomplete.module').then( m => m.AutocompletePageModule)
   },
 
 ];

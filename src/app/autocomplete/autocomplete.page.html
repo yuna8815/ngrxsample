@@ -1,0 +1,19 @@
+<ion-header>
+  <ion-toolbar>
+    <ion-buttons slot="start">
+      <ion-back-button></ion-back-button>
+    </ion-buttons>
+    <ion-title>사용자 검색</ion-title>
+  </ion-toolbar>
+</ion-header>
+
+<ion-content>
+	<div class="autocomplete">
+		<input id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
+		<ul id="suggestLayer"></ul>
+		<!-- 로딩바 -->
+		<div id="loading">
+			<ion-spinner></ion-spinner>
+		</div>
+	</div>
+</ion-content>
