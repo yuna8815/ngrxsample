@@ -8,7 +8,7 @@ import * as autocompleteActions from 'src/app/common/actions/autocomplete.action
 import { State } from '../common/reducer';
 
 const autocompleteSelector = {
-  autocomplete: createSelector(autocompleteReducer.autocomplete, state => state.autocomplete)
+  autocomplete: createSelector(autocompleteReducer.autocomplete, state => state.users)
 }
 
 @Component({

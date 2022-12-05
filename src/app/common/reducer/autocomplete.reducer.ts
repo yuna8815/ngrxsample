@@ -26,4 +26,4 @@ export function reducer(state: State | undefined, actions: any): State {
   return autocompleteReducer(state, actions)
 }
 
-export const autocomplete = createFeatureSelector<any>('autocomplete')
+export const autocomplete = createFeatureSelector<State>('autocomplete')
