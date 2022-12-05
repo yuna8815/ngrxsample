@@ -2,6 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
 import { fromEvent, Observable, partition } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, mergeMap, retry, share, switchMap, tap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
+import { Store } from '@ngrx/store';
+import { users } from '../common/reducer/autocomplete.reducer';
+import * as autocomplete from 'src/app/common/actions/autocomplete.actions'
 
 export interface user {
   avatar_url: any;
@@ -23,7 +26,9 @@ export class AutocompletePage implements OnInit {
   keyup$: any;
   user$: any;
 
-  constructor() {
+  constructor(
+    private store$: Store<users>
+  ) {
   }
 
   ngOnInit() {
@@ -78,6 +83,10 @@ export class AutocompletePage implements OnInit {
       <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
       </li>`
     }).join("")
+  }
+
+  doSearch() {
+    this.store$.dispatch(autocomplete.searchUser())
   }
 
   showLoading() {

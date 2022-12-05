@@ -9,7 +9,10 @@
 
 <ion-content>
 	<div class="autocomplete">
-		<input #search id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
+		<ion-item>
+			<input #search id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
+			<ion-button (click)="doSearch()">Serach</ion-button>
+		</ion-item>
 		<ul #suggestLayer id="suggestLayer"></ul>
 		<!-- 로딩바 -->
 		<div #loading id="loading">
