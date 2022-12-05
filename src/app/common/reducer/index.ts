@@ -4,7 +4,7 @@ import * as autocompleteReducer from './autocomplete.reducer'
 
 export interface State {
   counter: counterReducer.State,
-  autocomplete: autocompleteReducer.users
+  autocomplete: autocompleteReducer.State
 }
 
 export const reducers: ActionReducerMap<State> = {

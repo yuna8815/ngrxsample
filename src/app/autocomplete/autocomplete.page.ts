@@ -47,7 +47,6 @@ export class AutocompletePage implements OnInit {
 
     let user$ = this.keyup$.pipe(
       filter((query: any) => {
-        console.log("let user$", query)
         return query.trim().length > 0
       })
     )
@@ -73,6 +72,7 @@ export class AutocompletePage implements OnInit {
       })
     ).subscribe({
       next: (users: any) => {
+        console.log(users)
         this.store$.dispatch(autocompleteActions.searchUser({users}))
         // this.drawLayer(v.items);
       },
