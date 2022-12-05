@@ -1,3 +1,4 @@
-import { createAction } from "@ngrx/store";
+import { createAction, props } from "@ngrx/store";
+import { users } from "../reducer/autocomplete.reducer";
 
-export const searchUser = createAction('[Autocomplete Page] Search User')
+export const searchUser = createAction('[Autocomplete Page] Search User', props<users>())

@@ -13,10 +13,23 @@
 			<input #search id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
 			<ion-button (click)="doSearch()">Serach</ion-button>
 		</ion-item>
-		<ul #suggestLayer id="suggestLayer"></ul>
+		<div *ngIf="usersV$ | async as users">
+			{{ users.length }}
+			<ul *ngIf="users.length > 0;else empty" id="suggestLayer">
+				<li *ngFor="let user of usersV$ | async">
+					<img [src]="user.avatar_url" width="50px" height="50px"/>
+					<p><a [href]="user.html_url" target="_blank">{{ user.login }}</a></p>
+				</li>
+			</ul>
+		</div>
+		
 		<!-- 로딩바 -->
 		<div #loading id="loading">
 			<ion-spinner></ion-spinner>
 		</div>
 	</div>
 </ion-content>
+
+<ng-template #empty>
+	<ul></ul>
+</ng-template>

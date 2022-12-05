@@ -35,6 +35,7 @@ export class CounterPage implements OnInit {
   }
 
   decrement() {
+    console.log(this.count$)
     this.store.dispatch(decrement());
   }
 

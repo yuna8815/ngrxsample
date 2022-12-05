@@ -8,19 +8,21 @@ export interface userData {
 }
 
 export interface users {
-  user: userData[]
+  users: userData[]
 }
 
 const initialState: users = {
-  user: []
+  users: []
 }
 
 const autocompleteReducer = createReducer(
   initialState,
-  on(autocompleteActions.searchUser, (state: users) => state)
+  on(autocompleteActions.searchUser, (state: users, {users}) => ({
+    users: users
+  }))
 )
 
-export function reducer(state: users | undefined, actions: any) {
+export function reducer(state: users | undefined, actions: any): users {
   return autocompleteReducer(state, actions)
 }
 

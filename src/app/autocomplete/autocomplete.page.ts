@@ -1,15 +1,14 @@
 import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { fromEvent, Observable, partition } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, finalize, map, mergeMap, retry, share, switchMap, tap } from 'rxjs/operators';
+import { fromEvent } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, map, retry, share, switchMap, tap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
-import { Store } from '@ngrx/store';
-import { users } from '../common/reducer/autocomplete.reducer';
-import * as autocomplete from 'src/app/common/actions/autocomplete.actions'
+import { createSelector, Store } from '@ngrx/store';
+import * as autocompleteReducer from 'src/app/common/reducer/autocomplete.reducer'
+import * as autocompleteActions from 'src/app/common/actions/autocomplete.actions'
+import { State } from '../common/reducer';
 
-export interface user {
-  avatar_url: any;
-  html_url: any;
-  login: any;
+const autocompleteSelector = {
+  autocomplete: createSelector(autocompleteReducer.autocomplete, state => state.autocomplete)
 }
 
 @Component({
@@ -19,15 +18,16 @@ export interface user {
 })
 export class AutocompletePage implements OnInit {
 
-  @ViewChild('suggestLayer') layer$!: ElementRef;
+  // @ViewChild('suggestLayer') layer$!: ElementRef;
   @ViewChild('loading') loading$!: HTMLDivElement;
   @ViewChild('search') search$!: ElementRef;
 
   keyup$: any;
   user$: any;
+  usersV$ = this.store$.select(autocompleteSelector.autocomplete)
 
   constructor(
-    private store$: Store<users>
+    private store$: Store<State>
   ) {
   }
 
@@ -58,11 +58,23 @@ export class AutocompletePage implements OnInit {
       // tap(this.hideLoading),
       retry(2),
       // finalize(this.hideLoading),
-      tap(v => console.log("form user$", v))
+      // tap(v => console.log("form user$", v))
+      map((v: any) => {
+        let tempUsers: autocompleteReducer.userData[] = []
+        for(let user of v.items) {
+          let userData: autocompleteReducer.userData = {
+            avatar_url: user.avatar_url,
+            html_url: user.html_url,
+            login: user.login
+          }
+          tempUsers.push(userData)
+        }
+        return tempUsers
+      })
     ).subscribe({
-      next: (v: any) => {
-        console.log("user$ subscribe")
-        this.drawLayer(v.items);
+      next: (users: any) => {
+        this.store$.dispatch(autocompleteActions.searchUser({users}))
+        // this.drawLayer(v.items);
       },
       error: (e: any) => {
         console.error(e);
@@ -76,25 +88,33 @@ export class AutocompletePage implements OnInit {
     // ).subscribe();
   }
 
-  drawLayer(items: any) {
-    this.layer$.nativeElement.innerHTML = items.map((user: user) => {
-      return `<li style="border: 1px solid #bec8d8;list-style: none;">
-      <img src="${user.avatar_url}" width="50px" height="50px" style="position:relative;float:left;margin-right: 10px;"/>
-      <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
-      </li>`
-    }).join("")
-  }
+  // drawLayer(items: any) {
+  //   this.layer$.nativeElement.innerHTML = items.map((user: any) => {
+  //     return `<li style="border: 1px solid #bec8d8;list-style: none;">
+  //     <img src="${user.avatar_url}" width="50px" height="50px" style="position:relative;float:left;margin-right: 10px;"/>
+  //     <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
+  //     </li>`
+  //   }).join("")
+  // }
 
   doSearch() {
-    this.store$.dispatch(autocomplete.searchUser())
+    // this.layer$.nativeElement.innerHTML = this.usersV$.pipe(
+    //   map((user: any) => {
+    //     return `<li style="border: 1px solid #bec8d8;list-style: none;">
+    //     <img src="${user.avatar_url}" width="50px" height="50px" style="position:relative;float:left;margin-right: 10px;"/>
+    //     <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
+    //     </li>`
+    //   })
+    //  // .join("")
+    // )
   }
 
-  showLoading() {
-    this.loading$.style.display = "block";
-  }
+  // showLoading() {
+  //   this.loading$.style.display = "block";
+  // }
 
-  hideLoading() {
-    this.loading$.style.display = "none";
-  }
+  // hideLoading() {
+  //   this.loading$.style.display = "none";
+  // }
 
 }
