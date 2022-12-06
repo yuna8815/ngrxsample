@@ -1,6 +1,6 @@
 import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { fromEvent } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, retry, share, switchMap, tap } from 'rxjs/operators';
+import { fromEvent, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, retry, share, switchMap, tap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import { createSelector, Store } from '@ngrx/store';
 import * as autocompleteReducer from 'src/app/common/reducer/autocomplete.reducer'
@@ -19,11 +19,17 @@ const autocompleteSelector = {
 export class AutocompletePage implements OnInit {
 
   // @ViewChild('suggestLayer') layer$!: ElementRef;
-  @ViewChild('loading') loading$!: HTMLDivElement;
+  @ViewChild('loading') loading$!: ElementRef;
   @ViewChild('search') search$!: ElementRef;
+
+  searchButtonA$ = new Subject<void>();
+  inputKeywordA$ = new Subject<string>();
+
+  keyword: string = '';
 
   keyup$: any;
   user$: any;
+
   usersV$ = this.store$.select(autocompleteSelector.autocomplete)
 
   constructor(
@@ -32,31 +38,22 @@ export class AutocompletePage implements OnInit {
   }
 
   ngOnInit() {
-  }
-
-  ionViewWillEnter() {
-    this.keyup$ = fromEvent(this.search$.nativeElement, "keyup").pipe(
+    this.searchButtonA$.pipe(
       debounceTime(300), // 300ms 뒤에 데이터를 전달한다.
-      map((event: any) => 
-        event.target.value
+      map((v) => 
+        this.keyword
       ),
       distinctUntilChanged(),  // 특수키가 입력된 경우에는 나오지 않기 위해 중복 데이터 처리
-      tap(v => console.log("form keyup$", v)),
-      share()
-    )
-
-    let user$ = this.keyup$.pipe(
+      // tap(v => console.log("form keyup$", v)),
+      share(),
       filter((query: any) => {
         return query.trim().length > 0
-      })
-    )
-    
-    user$.pipe(
-      // tap(this.showLoading),
+      }),
+      tap(v => this.showLoading()),
       switchMap(query => ajax.getJSON(`https://api.github.com/search/users?q=${query}`)),
-      // tap(this.hideLoading),
+      tap(v => this.hideLoading()),
       retry(2),
-      // finalize(this.hideLoading),
+      finalize(() => this.hideLoading()),
       // tap(v => console.log("form user$", v))
       map((v: any) => {
         let tempUsers: autocompleteReducer.userData[] = []
@@ -70,51 +67,21 @@ export class AutocompletePage implements OnInit {
         }
         return tempUsers
       })
-    ).subscribe({
-      next: (users: any) => {
-        console.log(users)
-        this.store$.dispatch(autocompleteActions.searchUser({users}))
-        // this.drawLayer(v.items);
-      },
-      error: (e: any) => {
-        console.error(e);
-        alert(e.message)
-      }
-    });
+    ).subscribe((users: any) => {
+      this.store$.dispatch(autocompleteActions.searchUser({users}))
+    })
 
-    // reset$.pipe(
-    //   tap(v => this.layer$.nativeElement.innerHTML = ""),
-    //   tap(v => console.log("from reser$", v))
-    // ).subscribe();
+    this.inputKeywordA$.subscribe((keyword: string) => {
+      this.keyword = keyword
+    })
   }
 
-  // drawLayer(items: any) {
-  //   this.layer$.nativeElement.innerHTML = items.map((user: any) => {
-  //     return `<li style="border: 1px solid #bec8d8;list-style: none;">
-  //     <img src="${user.avatar_url}" width="50px" height="50px" style="position:relative;float:left;margin-right: 10px;"/>
-  //     <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
-  //     </li>`
-  //   }).join("")
-  // }
-
-  doSearch() {
-    // this.layer$.nativeElement.innerHTML = this.usersV$.pipe(
-    //   map((user: any) => {
-    //     return `<li style="border: 1px solid #bec8d8;list-style: none;">
-    //     <img src="${user.avatar_url}" width="50px" height="50px" style="position:relative;float:left;margin-right: 10px;"/>
-    //     <p style="line-height: 50px;margin:0px;padding:0px;"><a href="${user.html_url}" target="_blank">${user.login}</a></p>
-    //     </li>`
-    //   })
-    //  // .join("")
-    // )
+  showLoading() {
+    this.loading$.nativeElement.style.display = "block";
   }
 
-  // showLoading() {
-  //   this.loading$.style.display = "block";
-  // }
-
-  // hideLoading() {
-  //   this.loading$.style.display = "none";
-  // }
+  hideLoading() {
+    this.loading$.nativeElement.style.display = "none";
+  }
 
 }
