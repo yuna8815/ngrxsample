@@ -10,7 +10,7 @@
 <ion-content>
 	<div class="autocomplete">
 		<ion-item>
-			<input #search (input)="inputKeywordA$.next(search.value)" id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
+			<input #search (input)="inputKeywordV$.next(search.value)" id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
 			<ion-button (click)="searchButtonA$.next()">Serach</ion-button>
 		</ion-item>
 		<ul *ngIf="usersV$ | async" id="suggestLayer">

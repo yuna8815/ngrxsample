@@ -1,5 +1,5 @@
 import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
-import { fromEvent, Subject } from 'rxjs';
+import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
 import { debounceTime, distinctUntilChanged, filter, finalize, map, retry, share, switchMap, tap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
 import { createSelector, Store } from '@ngrx/store';
@@ -20,15 +20,14 @@ export class AutocompletePage implements OnInit {
 
   // @ViewChild('suggestLayer') layer$!: ElementRef;
   @ViewChild('loading') loading$!: ElementRef;
-  @ViewChild('search') search$!: ElementRef;
 
-  searchButtonA$ = new Subject<void>();
-  inputKeywordA$ = new Subject<string>();
+  searchButtonA$ = new Subject<string>();
+  inputKeywordV$ = new BehaviorSubject<string>('');
 
   keyword: string = '';
 
-  keyup$: any;
-  user$: any;
+  // keyup$: any;
+  // user$: Observable<State> | undefined;
 
   usersV$ = this.store$.select(autocompleteSelector.autocomplete)
 
@@ -39,18 +38,25 @@ export class AutocompletePage implements OnInit {
 
   ngOnInit() {
     this.searchButtonA$.pipe(
-      debounceTime(300), // 300ms 뒤에 데이터를 전달한다.
-      map((v) => 
-        this.keyword
-      ),
+      // debounceTime(300), // 300ms 뒤에 데이터를 전달한다.
+      map((v) => {
+        console.log()
+        return this.keyword
+      }),
       distinctUntilChanged(),  // 특수키가 입력된 경우에는 나오지 않기 위해 중복 데이터 처리
       // tap(v => console.log("form keyup$", v)),
       share(),
-      filter((query: any) => {
-        return query.trim().length > 0
+      // filter((query: any) => {
+      //   return query.trim().length > 0
+      // }),
+      tap(v => {
+        console.log()
+        this.showLoading()
       }),
-      tap(v => this.showLoading()),
-      switchMap(query => ajax.getJSON(`https://api.github.com/search/users?q=${query}`)),
+      switchMap(query => {
+        console.log()
+        return ajax.getJSON(`https://api.github.com/search/users?q=${query}`)
+      }),
       tap(v => this.hideLoading()),
       retry(2),
       finalize(() => this.hideLoading()),
@@ -71,7 +77,7 @@ export class AutocompletePage implements OnInit {
       this.store$.dispatch(autocompleteActions.searchUser({users}))
     })
 
-    this.inputKeywordA$.subscribe((keyword: string) => {
+    this.inputKeywordV$.subscribe(keyword => {
       this.keyword = keyword
     })
   }
