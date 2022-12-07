@@ -11,6 +11,8 @@ import { StoreModule } from '@ngrx/store';
 // import { CounterPageModule } from './counter/counter.module';
 import { reducers } from './common/reducer';
 import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { EffectsModule } from '@ngrx/effects';
+import { effects } from './common/effects';
 
 @NgModule({
   declarations: [AppComponent],
@@ -25,6 +27,8 @@ import { StoreDevtoolsModule } from '@ngrx/store-devtools';
     StoreModule.forRoot(reducers),
     // Register feature state 4.
     // CounterPageModule
+
+    EffectsModule.forRoot(effects),
     StoreDevtoolsModule.instrument({
       maxAge: 25
     })
