@@ -8,7 +8,8 @@ import * as autocompleteActions from 'src/app/common/actions/autocomplete.action
 import { State } from '../common/reducer';
 
 const autocompleteSelector = {
-  autocomplete: createSelector(autocompleteReducer.autocomplete, state => state.users)
+  users: createSelector(autocompleteReducer.autocomplete, state => state.users),
+  selectedUser: createSelector(autocompleteReducer.autocomplete, state => state.selectedUser)
 }
 
 @Component({
@@ -23,10 +24,16 @@ export class AutocompletePage implements OnInit {
 
   searchButtonA$ = new Subject<string>();
   inputKeywordV$ = new BehaviorSubject<string>('');
+  selectUserA$ = new Subject<autocompleteReducer.userData>();
+
+  selectUser$ = this.store$.select(autocompleteSelector.selectedUser)
+
+  usersV$ = this.store$.select(autocompleteSelector.users)
+
+  userIdV$ = new BehaviorSubject<string>('')
+  userImageV$ = new BehaviorSubject<string>('')
 
   keyword: string = '';
-
-  usersV$ = this.store$.select(autocompleteSelector.autocomplete)
 
   constructor(
     private store$: Store<State>
@@ -34,45 +41,6 @@ export class AutocompletePage implements OnInit {
   }
 
   ngOnInit() {
-    // this.searchButtonA$.pipe(
-    //   // debounceTime(300), // 300ms 뒤에 데이터를 전달한다.
-    //   map((v) => {
-    //     console.log()
-    //     return this.keyword
-    //   }),
-    //   distinctUntilChanged(),  // 특수키가 입력된 경우에는 나오지 않기 위해 중복 데이터 처리
-    //   share(),
-    //   // filter((query: any) => {
-    //   //   return query.trim().length > 0
-    //   // }),
-    //   tap(v => {
-    //     console.log()
-    //     this.showLoading()
-    //   }),
-    //   switchMap(query => {
-    //     console.log()
-    //     return ajax.getJSON(`https://api.github.com/search/users?q=${query}`)
-    //   }),
-    //   tap(v => this.hideLoading()),
-    //   retry(2),
-    //   finalize(() => this.hideLoading()),
-    //   map((v: any) => {
-    //     let tempUsers: autocompleteReducer.userData[] = []
-    //     for(let user of v.items) {
-    //       let userData: autocompleteReducer.userData = {
-    //         avatar_url: user.avatar_url,
-    //         html_url: user.html_url,
-    //         login: user.login
-    //       }
-    //       tempUsers.push(userData)
-    //     }
-    //     return tempUsers
-    //   })
-    // ).subscribe((users: any) => {
-    //   // this.store$.dispatch(autocompleteActions.getUsers({keyword}))
-    //   this.store$.dispatch(autocompleteActions.searchUser({users}))
-    // })
-
     this.searchButtonA$.subscribe(() => {
       this.store$.dispatch(autocompleteActions.getUsers(this.keyword))
     })
@@ -80,6 +48,13 @@ export class AutocompletePage implements OnInit {
     this.inputKeywordV$.subscribe(keyword => {
       this.keyword = keyword
     })
+
+    this.selectUserA$.subscribe((user) => {
+      console.log()
+      this.store$.dispatch(autocompleteActions.selectUser({user}))
+    })
+
+    // this.selectUser$.subscribe(())
   }
 
   showLoading() {

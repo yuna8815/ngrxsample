@@ -13,10 +13,14 @@
 			<input #search (input)="inputKeywordV$.next(search.value)" id="search" type="input" placeholder="검색하고 싶은 사용자 아이디를 입력해주세요" />
 			<ion-button (click)="searchButtonA$.next()">Serach</ion-button>
 		</ion-item>
+		<ion-item>
+			<ion-label>user.login</ion-label>
+		</ion-item>
 		<ul *ngIf="usersV$ | async" id="suggestLayer">
-			<li *ngFor="let user of usersV$ | async" class="user">
+			<li *ngFor="let user of usersV$ | async" (click)="selectUserA$.next(user)" class="user">
 				<img [src]="user.avatar_url" width="50px" height="50px"/>
-				<p><a [href]="user.html_url" target="_blank">{{ user.login }}</a></p>
+				<!-- <p><a [href]="user.html_url" target="_blank">{{ user.login }}</a></p> -->
+				<p>{{ user.login }}</p>
 			</li>
 		</ul>
 		
