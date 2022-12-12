@@ -1,12 +1,15 @@
-import { Component, OnInit, ViewChild} from '@angular/core';
-import { fromEvent, Observable, } from 'rxjs';
-import { debounceTime, distinctUntilChanged, filter, map, mergeMap } from 'rxjs/operators';
+import { Component, ElementRef, OnInit, ViewChild} from '@angular/core';
+import { BehaviorSubject, fromEvent, Observable, Subject } from 'rxjs';
+import { debounceTime, distinctUntilChanged, filter, finalize, map, retry, share, switchMap, tap } from 'rxjs/operators';
 import { ajax } from 'rxjs/ajax';
+import { createSelector, Store } from '@ngrx/store';
+import * as autocompleteReducer from 'src/app/common/reducer/autocomplete.reducer'
+import * as autocompleteActions from 'src/app/common/actions/autocomplete.actions'
+import { State } from '../common/reducer';
 
-export interface user {
-  avatar_url: any;
-  html_url: any;
-  login: any;
+const autocompleteSelector = {
+  users: createSelector(autocompleteReducer.autocomplete, state => state.users),
+  selectedUser: createSelector(autocompleteReducer.autocomplete, state => state.selectedUser)
 }
 
 @Component({
@@ -16,52 +19,50 @@ export interface user {
 })
 export class AutocompletePage implements OnInit {
 
-  @ViewChild('suggestLayer') layer$!: HTMLUListElement;
-  @ViewChild('loading') loading$!: HTMLDivElement;
-  @ViewChild('search') search$!: HTMLInputElement;
+  // @ViewChild('suggestLayer') layer$!: ElementRef;
+  @ViewChild('loading') loading$!: ElementRef;
 
-  user$ = fromEvent(this.search$, "keyup")
-    .pipe(
-      debounceTime(300), // 300ms 뒤에 데이터를 전달한다.
-      map((event: any) => 
-        event.target.value
-      ),
-      distinctUntilChanged(),  // 특수키가 입력된 경우에는 나오지 않기 위해 중복 데이터 처리    
-      filter(query => 
-        query != null
-        // query.trim().length > 0
-      ),
-      mergeMap(query => ajax.getJSON(`https://api.github.com/search/users?q=${query}`)),
-  );
+  searchButtonA$ = new Subject<string>();
+  inputKeywordV$ = new BehaviorSubject<string>('');
+  selectUserA$ = new Subject<autocompleteReducer.userData>();
 
-  constructor() {
+  selectUser$ = this.store$.select(autocompleteSelector.selectedUser)
+
+  usersV$ = this.store$.select(autocompleteSelector.users)
+
+  userIdV$ = new BehaviorSubject<string>('')
+  userImageV$ = new BehaviorSubject<string>('')
+
+  keyword: string = '';
+
+  constructor(
+    private store$: Store<State>
+  ) {
   }
 
   ngOnInit() {
-    this.user$.subscribe((v: any) => {
-      this.drawLayer(v.items);
-    });
-  }
+    this.searchButtonA$.subscribe(() => {
+      this.store$.dispatch(autocompleteActions.getUsers(this.keyword))
+    })
 
-  ionViewWillEnter() {
-    console.log(this.layer$)
-  }
+    this.inputKeywordV$.subscribe(keyword => {
+      this.keyword = keyword
+    })
 
-  drawLayer(items: any) {
-    this.layer$.innerHTML = items.map((user: user) => {
-      return `<li class="user">
-      <img src="${user.avatar_url}" width="50px" height="50px"/>
-      <p><a href="${user.html_url}" target="_blank">${user.login}</a></p>
-      </li>`
-    }).join("")
+    this.selectUserA$.subscribe((user) => {
+      console.log()
+      this.store$.dispatch(autocompleteActions.selectUser({user}))
+    })
+
+    // this.selectUser$.subscribe(())
   }
 
   showLoading() {
-    this.loading$.style.display = "block";
+    this.loading$.nativeElement.style.display = "block";
   }
 
   hideLoading() {
-    this.loading$.style.display = "none";
+    this.loading$.nativeElement.style.display = "none";
   }
 
 }

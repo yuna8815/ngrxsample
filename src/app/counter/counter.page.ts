@@ -35,6 +35,7 @@ export class CounterPage implements OnInit {
   }
 
   decrement() {
+    console.log(this.count$)
     this.store.dispatch(decrement());
   }
 
@@ -42,4 +43,37 @@ export class CounterPage implements OnInit {
     this.store.dispatch(reset());
   }
 
+  test() {
+    let value = {USER : '홍길동'} 
+    this.printOut1(value)
+    this.printOut4()
+    this.printOut2()
+    this.printOut6()
+    this.printOut5(value)
+    this.printOut3()
+  }
+
+  printOut1(val: any){
+    console.log("11111")
+  }
+  printOut2(){
+    console.log("22222")
+    this.printOut4()
+  }
+  printOut3(){
+    console.log("33333")
+  }
+  printOut4(){
+    console.log("44444")
+    this.printOut3()
+  }
+  printOut5(val : any){
+    console.log("55555")
+    val.USER = "김아무개"
+  }
+  printOut6(){
+    console.log("66666")
+    let value = {USER : '이순신'} 
+    this.printOut5(value)
+  }
 }
