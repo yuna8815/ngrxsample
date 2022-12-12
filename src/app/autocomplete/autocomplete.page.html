@@ -14,7 +14,10 @@
 			<ion-button (click)="searchButtonA$.next()">Serach</ion-button>
 		</ion-item>
 		<ion-item>
-			<ion-label>user.login</ion-label>
+			<ion-avatar slot="start">
+				<img alt="" [src]="userImageV$ | async" />
+			</ion-avatar>
+			<ion-label>{{ userIdV$ | async }}</ion-label>
 		</ion-item>
 		<ul *ngIf="usersV$ | async" id="suggestLayer">
 			<li *ngFor="let user of usersV$ | async" (click)="selectUserA$.next(user)" class="user">

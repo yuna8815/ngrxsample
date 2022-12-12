@@ -54,6 +54,11 @@ export class AutocompletePage implements OnInit {
       this.store$.dispatch(autocompleteActions.selectUser({user}))
     })
 
+    this.selectUser$.subscribe((selectedUser) => {
+      this.userIdV$.next(selectedUser.login)
+      this.userImageV$.next(selectedUser.avatar_url)
+    })
+
     // this.selectUser$.subscribe(())
   }
 
